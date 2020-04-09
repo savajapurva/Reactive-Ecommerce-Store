@@ -29,16 +29,11 @@ class App extends React.Component {
               id: snap.id,
               ...snap.data()
             }
-          }, () => console.log('current state', this.state)
-          )
+          })
         });
       } else {
         this.setState({currentUser: user})
       }
-      // createUserProfileUserDocument(user);
-      // this.setState({currentUser: user});
-      // console.log(user);
-      
     })
   }
 
