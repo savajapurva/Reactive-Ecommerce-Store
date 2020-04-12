@@ -3,14 +3,22 @@ import './cart-dropdown.styles.scss'
 import CustomButton from '../custom-button/custom-button.component';
 import CartItem from '../cart-item/cart-item.component';
 import { connect } from 'react-redux';
-import {selectCartItems} from '../../redux/cart/cart.selecter'
+import {selectCartItems} from '../../redux/cart/cart.selector'
+import {createStructuredSelector} from 'reselect'
 
-const CartDropdown = ({cartItems}) => {
+const CartDropdown = (cartItems) => { 
+    console.log(cartItems);
+    
     return (
         <div className="cart-dropdown">
             <div className="cart-items">
                 {
-                    cartItems.map((item) => <CartItem key={item.id} item={item}/>)
+                    cartItems.length ? (
+                        cartItems.map((item) => (<CartItem key={item.id} item={item}/>))
+                    )  
+                    : (
+                        <span className="empty-message">Your cart is empty</span>
+                    )
                 }
             </div>
             <CustomButton>GO TO CHECKOUT</CustomButton>
@@ -18,8 +26,8 @@ const CartDropdown = ({cartItems}) => {
     )
 }
 
-const mapStateToProps = (state) => ({
-    cart: selectCartItems(state)
+const mapStateToProps = createStructuredSelector({
+    cartItems: selectCartItems
 })
 
 export default connect(mapStateToProps, null)(CartDropdown)
