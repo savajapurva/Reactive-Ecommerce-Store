@@ -13,13 +13,13 @@ const config = {
     measurementId: "G-QCNG6PDFVY"
   };
 
+  firebase.initializeApp(config);
+
   export const createUserProfileUserDocument = async (userAuth, additionalData) => {
     if(!userAuth) return;
 
     const userRef = firestore.doc(`users/${userAuth.uid}`);  
     const snapshot = await userRef.get();
-    console.log('snapshot', snapshot);
-
     if(!snapshot.exists) {
         const { displayName, email} = userAuth;
         const createdAt = new Date();
@@ -36,9 +36,34 @@ const config = {
     }
     
     return userRef;
-  } 
+  }
 
-  firebase.initializeApp(config);
+  export const addCollectionAndDocuments = async (collectionKey, objectsToAdd) => {
+    const collectionRef = firestore.collection(collectionKey);
+    const batch = firestore.batch();
+    objectsToAdd.forEach((obj) => {
+      const newDocRef = collectionRef.doc();
+      batch.set(newDocRef, obj)
+    });
+
+    await batch.commit();
+  }
+
+  export const convertCollectionsSnapshotToMap = (collections) => {
+    const transformedCollection = collections.docs.map((doc) => {
+      const {title, items} = doc.data();
+      return {
+        routeName: encodeURI(title.toLowerCase()),
+        id: doc.id,
+        title,
+        items
+      }      
+    });
+    return transformedCollection.reduce((acc, collection) => {
+      acc[collection.title.toLowerCase()] = collection;
+      return acc
+    }, {})
+  }
 
   export const auth = firebase.auth();
   export const firestore = firebase.firestore();
